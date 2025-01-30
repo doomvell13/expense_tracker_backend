@@ -21,19 +21,29 @@ export const addCategory = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
   try {
+    console.log('Update request:', {
+      categoryId: req.params.id,
+      userId: req.user._id,
+      body: req.body
+    });
+
     const category = await Category.findOneAndUpdate(
-      { _id: req.params.id, user: req.user._id },
+      { _id: req.params.id },
       { 
         name: req.body.name,
-        icon: req.body.icon.toString() // Convert icon code to string
+        icon: req.body.icon.toString(),
+        user: req.user._id
       },
       { new: true }
     );
+
     if (!category) {
       return res.status(404).json({ message: 'Category not found' });
     }
+    console.log('Updated category:', category);
     res.json(category);
   } catch (error) {
+    console.error('Update error:', error);
     res.status(400).json({ error: error.message });
   }
 };

@@ -3,7 +3,11 @@ import Expense from '../models/expense.js';
 export const addExpense = async (req, res) => {
   try {
     const expense = new Expense({
-      ...req.body,
+      description: req.body.description,
+      amount: req.body.amount,
+      category: req.body.category,
+      tags: req.body.tags || [], 
+      date: req.body.date,
       user: req.user._id
     });
     await expense.save();
@@ -24,14 +28,24 @@ export const getExpenses = async (req, res) => {
 
 export const updateExpense = async (req, res) => {
   try {
+    const updates = {
+      description: req.body.description,
+      amount: req.body.amount,
+      category: req.body.category,
+      tags: req.body.tags, // Include tags in updates
+      date: req.body.date
+    };
+
     const expense = await Expense.findOneAndUpdate(
       { _id: req.params.id, user: req.user._id },
-      req.body,
+      updates,
       { new: true }
     );
+
     if (!expense) {
       return res.status(404).json({ error: 'Expense not found' });
     }
+
     res.json(expense);
   } catch (error) {
     res.status(400).json({ error: error.message });
