@@ -1,18 +1,43 @@
 import Expense from '../models/expense.js';
+import Tag from '../models/tag.js'
 
 export const addExpense = async (req, res) => {
   try {
+    console.log('Received request body:', req.body); // Debug log
+
     const expense = new Expense({
       description: req.body.description,
       amount: req.body.amount,
       category: req.body.category,
+      type: req.body.type, 
       tags: req.body.tags || [], 
       date: req.body.date,
       user: req.user._id
     });
+
+    if (req.body.tags && req.body.tags.length > 0) {
+      for (const tagName of req.body.tags) {
+        await Tag.findOneAndUpdate(
+          { 
+            user: req.user._id,
+            name: tagName 
+          },
+          { 
+            $inc: { usageCount: 1 },
+            lastUsed: new Date()
+          },
+          { 
+            upsert: true,
+            new: true
+          }
+        );
+      }
+    }
+    
     await expense.save();
     res.status(201).json(expense);
   } catch (error) {
+    console.error('Error saving expense:', error); // Debug log
     res.status(400).json({ error: error.message });
   }
 };

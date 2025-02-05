@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes.js';
 import expenseRoutes from './routes/expense.routes.js';
 import categoryRoutes from './routes/category.routes.js';
+import tagRoutes from './routes/tag.routes.js';
 
 const app = express();
 
@@ -25,6 +26,8 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET);
 app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/tags', tagRoutes);
+
 
 // Test endpoint
 app.get('/test', (req, res) => {

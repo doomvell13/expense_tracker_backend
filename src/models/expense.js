@@ -12,11 +12,17 @@ const expenseSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
-    trim: true
+    required: false,  // Change from required: true
+    trim: true,
+    default: ''  // Add default empty string
   },
   category: {
     type: String,
+    required: true
+  },
+  type: {
+    type: String,
+    enum: ['expense', 'income'],
     required: true
   },
   tags: [{
