@@ -44,9 +44,46 @@ export const addExpense = async (req, res) => {
 
 export const getExpenses = async (req, res) => {
   try {
-    const expenses = await Expense.find({ user: req.user._id });
+    const { startDate, endDate } = req.query;
+    
+    console.log('Received date params:', { startDate, endDate });
+    
+    // Build query object
+    const query = { user: req.user._id };
+    
+    // Add date filtering if dates are provided
+    if (startDate || endDate) {
+      query.date = {};
+      if (startDate) {
+        // Create date at start of day in UTC
+        const start = new Date(startDate);
+        start.setUTCHours(0, 0, 0, 0);
+        query.date.$gte = start;
+        console.log('Start date in UTC:', start.toISOString());
+      }
+      if (endDate) {
+        // Create date at end of day in UTC
+        const end = new Date(endDate);
+        end.setUTCHours(23, 59, 59, 999);
+        query.date.$lte = end;
+        console.log('End date in UTC:', end.toISOString());
+      }
+    }
+
+    console.log('Fetching expenses with query:', JSON.stringify(query, null, 2));
+    
+    const expenses = await Expense.find(query).sort({ date: -1 });
+    console.log(`Found ${expenses.length} expenses`);
+    console.log('Date range of results:',
+      expenses.length > 0 ? {
+        earliest: new Date(Math.min(...expenses.map(e => e.date))).toISOString(),
+        latest: new Date(Math.max(...expenses.map(e => e.date))).toISOString()
+      } : 'No results'
+    );
+    
     res.json(expenses);
   } catch (error) {
+    console.error('Error fetching expenses:', error);
     res.status(500).json({ error: error.message });
   }
 };

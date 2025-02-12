@@ -35,5 +35,8 @@ const expenseSchema = new mongoose.Schema({
   }
 });
 
+// Add compound index for user and date fields
+expenseSchema.index({ user: 1, date: -1 });
+
 const Expense = mongoose.model('Expense', expenseSchema);
 export default Expense;
