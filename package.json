@@ -8,7 +8,8 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "jest",
-    "migrate": "node src/utils/migrations.js"
+    "migrate": "node src/utils/migrations.js",
+    "fix-duplicates": "node src/utils/fix_duplicates.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
